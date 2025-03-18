@@ -251,10 +251,19 @@ END;
 /
 
 
+
 CREATE OR REPLACE TRIGGER trg_team_details_temp_insert
 AFTER INSERT ON team_details_temp
 FOR EACH ROW
 BEGIN
+
+    INSERT INTO estadium (
+        name,
+        capacity,
+    ) VALUES (
+        :NEW.arena, 
+        :NEW.arenacapacity
+    );
     -- Actualizar información adicional del equipo
     UPDATE Teams
     SET owner = :NEW.owner,
