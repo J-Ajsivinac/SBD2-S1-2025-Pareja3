@@ -298,3 +298,111 @@ END;
 /
 
 -- TODO: Trigger para cargar datos de game_temp a Games 
+
+
+
+
+-- Trigers para la carga de common_player_info_temp a Players
+
+create or replace TRIGGER trg_CommonPlayerInfo_players
+AFTER INSERT OR UPDATE ON temp_CommonPlayerInfo
+FOR EACH ROW
+DECLARE
+    v_id_country NUMBER;
+    v_count      NUMBER;
+BEGIN
+    -- Obtener el id_country si existe
+    BEGIN
+        SELECT id_country INTO v_id_country
+        FROM countries
+        WHERE pais = :NEW.COUNTRY
+        FETCH FIRST 1 ROWS ONLY;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            -- Cambiar el id pais
+            v_id_country := 75;
+    END;
+
+    -- Verificar si el jugador ya existe
+    SELECT COUNT(*) INTO v_count 
+    FROM players 
+    WHERE id_player = :NEW.person_id;
+
+    IF v_count = 0 THEN
+        -- Insertar nuevo jugador
+        INSERT INTO players (
+            id_player,
+            full_name,
+            first_name,
+            last_name,
+            is_active,
+            birthdate,
+            school,
+            last_affiliation,
+            height,
+            weight,
+            greatest_75_flag,
+            countries_id_country
+        ) VALUES (
+            :NEW.person_id, 
+            :NEW.first_name || ' ' || :NEW.last_name,  
+            :NEW.first_name,
+            :NEW.last_name,
+            0,
+            :NEW.birthdate,
+            :NEW.school,
+            :NEW.last_affiliation,
+            :NEW.height,
+            :NEW.weight,
+            :NEW.greatest_75_flag,
+            v_id_country
+        );
+    ELSE
+        -- Actualizar jugador existente
+        UPDATE players
+        SET
+            first_name = :NEW.first_name,
+            last_name = :NEW.last_name,
+            birthdate = :NEW.birthdate,
+            school = :NEW.school,
+            last_affiliation = :NEW.last_affiliation,
+            height = :NEW.height,
+            weight = :NEW.weight,
+            greatest_75_flag = :NEW.greatest_75_flag,
+            countries_id_country = v_id_country
+        WHERE id_player = :NEW.person_id;
+    END IF;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE_APPLICATION_ERROR(-20002, 'Error en el trigger: ' || SQLERRM || ' ID: ' || :NEW.person_id);
+END;
+
+
+
+-- Triggers para la carga de players 
+
+
+create or replace TRIGGER trg_insert_players
+AFTER INSERT ON temp_player
+FOR EACH ROW
+BEGIN
+    BEGIN
+        INSERT INTO players (
+            id_player,
+            full_name,
+            first_name,
+            last_name,
+            is_active
+        ) VALUES (
+            :NEW.id, 
+            :NEW.full_name,
+            :NEW.first_name,
+            :NEW.last_name,
+            :NEW.is_active
+        );
+    EXCEPTION
+        WHEN OTHERS THEN
+            ROLLBACK;  
+            RAISE;  
+    END;
+END;
