@@ -250,21 +250,28 @@ EXCEPTION
 END;
 /
 
-
-
 CREATE OR REPLACE TRIGGER trg_team_details_temp_insert
 AFTER INSERT ON team_details_temp
 FOR EACH ROW
+DECLARE
+    v_id_estadium NUMBER; -- Variable corregida
 BEGIN
-
+    -- Insertar en la tabla estadium
     INSERT INTO estadium (
         name,
-        capacity,
+        capacity
     ) VALUES (
         :NEW.arena, 
         :NEW.arenacapacity
     );
-    -- Actualizar información adicional del equipo
+
+    -- Obtener el ID del estadio recién insertado
+    SELECT id_stadium INTO v_id_estadium
+    FROM estadium
+    WHERE name = :NEW.arena
+
+
+    -- Actualizar la tabla Teams con los datos del nuevo equipo
     UPDATE Teams
     SET owner = :NEW.owner,
         generalManager = :NEW.generalmanager,
@@ -274,11 +281,13 @@ BEGIN
         instagram = :NEW.instagram,
         twitter = :NEW.twitter
     WHERE id_team = :NEW.team_id;
+
 EXCEPTION
     WHEN OTHERS THEN
         RAISE;
 END;
 /
+
 
 -- Trigger para cargar datos de team_history_temp a History
 CREATE OR REPLACE TRIGGER trg_team_history_temp_insert
