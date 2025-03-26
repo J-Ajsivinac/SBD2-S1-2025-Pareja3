@@ -29,7 +29,7 @@ ALTER TABLE Cities
 CREATE TABLE Countries 
     ( 
      id_country INTEGER  NOT NULL , 
-     pais       VARCHAR2 (15) 
+     pais       VARCHAR2 (30) 
     ) 
 ;
 
@@ -177,7 +177,7 @@ CREATE TABLE Players
     height               VARCHAR2(4000), 
     weight               VARCHAR2(4000), 
     playercode           VARCHAR2(4000), 
-    greatest_75_flag     BLOB, 
+    greatest_75_flag     VARCHAR2(5), 
     Countries_id_country INTEGER, 
     Teams_id_team        INTEGER
 );
