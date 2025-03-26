@@ -169,29 +169,18 @@ CREATE TABLE Players
      id_player            INTEGER  NOT NULL , 
      full_name            VARCHAR2 (100) , 
      first_name           VARCHAR2 (4000) , 
-     las_name             VARCHAR2 (4000) , 
+     last_name             VARCHAR2 (4000) , 
      is_active            CHAR (1) , 
-     birthdate            TIMESTAMP  NOT NULL , 
-     school               VARCHAR2 (4000)  NOT NULL , 
-     last_affiliation     VARCHAR2 (4000)  NOT NULL , 
-     height               VARCHAR2 (4000)  NOT NULL , 
-     weight               VARCHAR2 (4000)  NOT NULL , 
-     playercode           VARCHAR2 (4000)  NOT NULL , 
-     greatest_75_flag     BLOB, 
-     Countries_id_country INTEGER  NOT NULL , 
-     Teams_id_team        INTEGER  NOT NULL 
-    ) 
-;
-CREATE UNIQUE INDEX Players__IDX ON Players 
-    ( 
-     Countries_id_country ASC 
-    ) 
-;
-CREATE UNIQUE INDEX Players__IDXv1 ON Players 
-    ( 
-     Teams_id_team ASC 
-    ) 
-;
+    birthdate            TIMESTAMP, 
+    school               VARCHAR2(4000), 
+    last_affiliation     VARCHAR2(4000), 
+    height               VARCHAR2(4000), 
+    weight               VARCHAR2(4000), 
+    playercode           VARCHAR2(4000), 
+    greatest_75_flag     BLOB, 
+    Countries_id_country INTEGER, 
+    Teams_id_team        INTEGER
+);
 
 ALTER TABLE Players 
     ADD CONSTRAINT Players_PK PRIMARY KEY ( id_player ) ;
