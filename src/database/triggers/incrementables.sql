@@ -21,3 +21,10 @@ WHEN (NEW.id_country IS NULL)  -- Solo si no se especifica un ID manualmente
 BEGIN
     SELECT paises.NEXTVAL INTO :NEW.id_country FROM dual;
 END;
+
+-- otros 
+
+CREATE SEQUENCE city_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE estadium_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE state_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE countries_seq START WITH 1 INCREMENT BY 1;
