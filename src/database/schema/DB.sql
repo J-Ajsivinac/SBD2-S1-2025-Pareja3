@@ -69,7 +69,7 @@ ALTER TABLE Estadium
 
 CREATE TABLE Game_officials 
     ( 
-     jersey_num            INTEGER  NOT NULL , 
+     jersey_num            INTEGER , 
      Games_id_game         INTEGER  NOT NULL , 
      Officials_id_official INTEGER  NOT NULL 
     ) 
@@ -80,12 +80,12 @@ CREATE TABLE Games
      id_game          INTEGER  NOT NULL , 
      game_date        DATE , 
      attendance       INTEGER , 
-     game_time        INTEGER , 
+     game_time        VARCHAR2(6) , 
      Teams_id_team    INTEGER  NOT NULL , 
      Teams_id_team1   INTEGER  NOT NULL , 
      Score_team1      INTEGER , 
      score_team2      INTEGER , 
-     game_sequence    INTEGER  NOT NULL , 
+     game_sequence    INTEGER , 
      game_status_id   INTEGER  NOT NULL , 
      game_status_text VARCHAR2 (4000) , 
      gamecode         VARCHAR2 (20) , 
@@ -104,7 +104,7 @@ ALTER TABLE Games
 CREATE TABLE History 
     ( 
      Teams_id_team    INTEGER  NOT NULL , 
-     nickname         VARCHAR2 (10) , 
+     nickname         VARCHAR2 (30) , 
      city             VARCHAR2 (20) , 
      year_founded     INTEGER , 
      year_active_till INTEGER 
@@ -124,7 +124,7 @@ CREATE TABLE Officials
      id_official INTEGER  NOT NULL , 
      first_name  VARCHAR2 (25)  NOT NULL , 
      last_name   VARCHAR2 (25)  NOT NULL , 
-     jersey_num  INTEGER  NOT NULL 
+     jersey_num  INTEGER
     ) 
 ;
 
@@ -199,9 +199,10 @@ ALTER TABLE Quarter_score
 
 CREATE TABLE Season 
     ( 
-     id_season   INTEGER  NOT NULL , 
-     season_year DATE  NOT NULL , 
-     season_type DATE  NOT NULL 
+    id_season   INTEGER  NOT NULL , 
+    season_date_o DATE  NOT NULL , 
+    season_date_f DATE NOT NULL,
+    season_type VARCHAR2(50)  NOT NULL 
     ) 
 ;
 
@@ -224,7 +225,7 @@ CREATE TABLE Teams
      id_team             INTEGER  NOT NULL , 
      full_name           VARCHAR2 (4000) , 
      abbreviation        VARCHAR2 (3) , 
-     nickname            VARCHAR2 (10) , 
+     nickname            VARCHAR2 (30) , 
      year_founded        INTEGER , 
      Cities_id_city      INTEGER  NOT NULL , 
      Estadium_id_stadium INTEGER  NOT NULL , 

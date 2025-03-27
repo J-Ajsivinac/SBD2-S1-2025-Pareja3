@@ -2,6 +2,7 @@ DROP SEQUENCE city_seq;
 DROP SEQUENCE estadium_seq;
 DROP SEQUENCE state_seq;
 DROP SEQUENCE countries_seq;
+DROP SEQUENCE teams_seq;
 
 
 DROP TABLE TEAM_DETAILS_TEMP;
