@@ -13,8 +13,9 @@ BEGIN
         FETCH FIRST 1 ROWS ONLY;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            -- Cambiar el id pais
-            v_id_country := 76;
+            INSERT INTO Countries (id_country, pais) 
+            VALUES (countries_seq.NEXTVAL, :NEW.country) 
+            RETURNING id_country INTO v_id_country;
     END;
 
     -- Verificar si el jugador ya existe
