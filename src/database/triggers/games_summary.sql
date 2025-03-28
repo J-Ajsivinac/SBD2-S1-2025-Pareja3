@@ -17,8 +17,3 @@ EXCEPTION
         RAISE;
 END;
 /
-
-
-
-ALTER TABLE Game_officials 
-MODIFY jersey_num NULL;
