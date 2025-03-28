@@ -103,7 +103,7 @@ ALTER TABLE Games
 
 CREATE TABLE History 
     ( 
-     Teams_id_team    INTEGER  NOT NULL , 
+     Teams_id_team    INTEGER, 
      nickname         VARCHAR2 (30) , 
      city             VARCHAR2 (20) , 
      year_founded     INTEGER , 
