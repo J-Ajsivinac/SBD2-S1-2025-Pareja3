@@ -94,6 +94,7 @@ CREATE TABLE Games
      natl_tv_broad_a  VARCHAR2 (4000) , 
      live_p_t_bcast   VARCHAR2 (4)  NOT NULL , 
      wh_status        INTEGER  NOT NULL , 
+     pts              INTEGER NOT NULL,
      Season_id_season INTEGER  NOT NULL 
     ) 
 ;
@@ -136,7 +137,8 @@ CREATE TABLE Overtime_score
      id_overtime   INTEGER  NOT NULL , 
      ot_num        INTEGER  NOT NULL , 
      points        INTEGER  NOT NULL , 
-     Games_id_game INTEGER  NOT NULL 
+     Games_id_game INTEGER  NOT NULL ,
+     team_type     VARCHAR2(10)
     ) 
 ;
 
@@ -190,7 +192,8 @@ CREATE TABLE Quarter_score
      id_quarter    INTEGER  NOT NULL , 
      querter_num   INTEGER  NOT NULL , 
      points        INTEGER  NOT NULL , 
-     Games_id_game INTEGER  NOT NULL 
+     Games_id_game INTEGER  NOT NULL ,
+     team_type VARCHAR2(10)
     ) 
 ;
 

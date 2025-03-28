@@ -6,6 +6,9 @@ DROP SEQUENCE teams_seq;
 
 
 DROP TABLE TEAM_DETAILS_TEMP;
+TRUNCATE TABLE line_score_temp;
+TRUNCATE TABLE Quarter_score;
+TRUNCATE TABLE Overtime_score;
 TRUNCATE TABLE TEAM_TEMP;
 
 --  Script para borrar datos de todas las tablas temporales si existen
