@@ -1,4 +1,4 @@
-CREATE OR REPLACE TRIGGER trg_inactive_players
+create or replace TRIGGER trg_inactive_players
 AFTER INSERT ON inactive_players_temp
 FOR EACH ROW
 
@@ -27,7 +27,7 @@ BEGIN
             :NEW.first_name || ' ' || :NEW.last_name,  
             :NEW.first_name,
             :NEW.last_name,
-            0
+            3
         );
     END IF;
 

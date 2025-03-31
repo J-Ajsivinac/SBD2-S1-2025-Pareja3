@@ -5,16 +5,17 @@ DECLARE
     v_id_country NUMBER;
     v_count      NUMBER;
 BEGIN
-    -- Obtener el id_country si existe
+    -- Intentar obtener el ID del país
     BEGIN
         SELECT id_country INTO v_id_country
-        FROM countries
-        WHERE pais = :NEW.COUNTRY
-        FETCH FIRST 1 ROWS ONLY;
+        FROM countries 
+        WHERE pais = :NEW.country
+        AND ROWNUM = 1;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
-            INSERT INTO Countries (id_country, pais) 
-            VALUES (countries_seq.NEXTVAL, :NEW.country) 
+            -- Insertar nuevo país si no existe
+            INSERT INTO countries (id_country, pais)
+            VALUES (paises.NEXTVAL, :NEW.country)
             RETURNING id_country INTO v_id_country;
     END;
 
@@ -43,7 +44,7 @@ BEGIN
             :NEW.first_name || ' ' || :NEW.last_name,  
             :NEW.first_name,
             :NEW.last_name,
-            0,
+            3,
             :NEW.birthdate,
             :NEW.school,
             :NEW.last_affiliation,
@@ -67,8 +68,14 @@ BEGIN
             countries_id_country = v_id_country
         WHERE id_player = :NEW.person_id;
     END IF;
+
 EXCEPTION
     WHEN OTHERS THEN
-        RAISE_APPLICATION_ERROR(-20002, 'Error en el trigger: ' || SQLERRM || ' ID: ' || :NEW.person_id|| ' PAIS: ' || :NEW.COUNTRY);
+        RAISE_APPLICATION_ERROR(
+            -20002,
+            'Error en el trigger: ' || SQLERRM || 
+            ' | ID: ' || :NEW.person_id || 
+            ' | PAIS: ' || :NEW.COUNTRY
+        );
 END;
 /

@@ -12,7 +12,7 @@ BEGIN
         -- Buscar el equipo existente
         SELECT id_team INTO v_team_id 
         FROM Teams 
-        WHERE (id_team = p_id_team OR abbreviation = p_abbreviation)
+        WHERE id_team = p_id_team OR abbreviation = p_abbreviation
         AND ROWNUM = 1;
 
         RETURN v_team_id;
@@ -50,7 +50,7 @@ BEGIN
                     EXCEPTION
                         WHEN NO_DATA_FOUND THEN
                             INSERT INTO Countries (id_country, pais) 
-                            VALUES (paises.NEXTVAL, 'Unknown') 
+                            VALUES (countries_seq.NEXTVAL, 'Unknown') 
                             RETURNING id_country INTO v_country_id;
                     END;
 

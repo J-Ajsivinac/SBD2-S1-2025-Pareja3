@@ -29,7 +29,7 @@ ALTER TABLE Cities
 CREATE TABLE Countries 
     ( 
      id_country INTEGER  NOT NULL , 
-     pais       VARCHAR2 (30) 
+     pais       VARCHAR2 (50) 
     ) 
 ;
 
@@ -43,8 +43,8 @@ CREATE TABLE Draft
      round_number        INTEGER  NOT NULL , 
      round_pick          INTEGER  NOT NULL , 
      overall_pick        INTEGER  NOT NULL , 
-     draft_type          VARCHAR2 (6)  NOT NULL , 
-     organization        VARCHAR2 (18) , 
+     draft_type          VARCHAR2 (20)  NOT NULL , 
+     organization        VARCHAR2 (100) , 
      organization_type   VARCHAR2 (50) , 
      player_profile_flag BLOB  NOT NULL , 
      Teams_id_team       INTEGER  NOT NULL , 
@@ -59,7 +59,7 @@ ALTER TABLE Draft
 CREATE TABLE Estadium 
     ( 
      id_stadium INTEGER  NOT NULL , 
-     name       VARCHAR2 (20) , 
+     name       VARCHAR2 (40) , 
      capacity   INTEGER 
     ) 
 ;
