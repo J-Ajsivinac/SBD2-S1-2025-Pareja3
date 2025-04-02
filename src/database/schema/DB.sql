@@ -64,8 +64,7 @@ CREATE TABLE Draft
      organization_type   VARCHAR2 (50) , 
      player_profile_flag BLOB  NOT NULL , 
      Teams_id_team       INTEGER  NOT NULL , 
-     Players_id_player   INTEGER  NOT NULL , 
-     Season_id_season    INTEGER  NOT NULL 
+     Players_id_player   INTEGER  NOT NULL
     ) 
 ;
 
@@ -110,6 +109,7 @@ CREATE TABLE Games
      natl_tv_broad_a  VARCHAR2 (4000) , 
      live_p_t_bcast   VARCHAR2 (4)  NOT NULL , 
      wh_status        INTEGER  NOT NULL , 
+     pts              INTEGER,
      Season_id_season INTEGER  NOT NULL 
     ) 
 ;
@@ -129,7 +129,7 @@ CREATE TABLE History
 
 CREATE TABLE Inactive_players 
     ( 
-     jersey_num        INTEGER  , 
+     jersey_num        INTEGER, 
      Players_id_player INTEGER  NOT NULL , 
      Teams_id_team     INTEGER  NOT NULL 
     ) 
@@ -364,16 +364,6 @@ ALTER TABLE Draft
     ) 
 ;
 
-ALTER TABLE Draft 
-    ADD CONSTRAINT Draft_Season_FK FOREIGN KEY 
-    ( 
-     Season_id_season
-    ) 
-    REFERENCES Season 
-    ( 
-     id_season
-    ) 
-;
 
 ALTER TABLE Draft 
     ADD CONSTRAINT Draft_Teams_FK FOREIGN KEY 

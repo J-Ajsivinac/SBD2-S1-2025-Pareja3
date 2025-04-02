@@ -29,6 +29,15 @@ BEGIN
             :NEW.last_name,
             3
         );
+            INSERT INTO inactive_players (
+        PLAYERS_ID_PLAYER,
+        jersey_num,
+        teams_id_team
+    ) VALUES (
+        :NEW.player_id, 
+        :NEW.jersey_num, 
+        v_team_id
+    );
     END IF;
 
     -- Insertar en inactive_players
