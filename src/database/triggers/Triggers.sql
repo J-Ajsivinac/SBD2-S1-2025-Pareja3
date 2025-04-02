@@ -9,7 +9,7 @@ BEGIN
         INSERT INTO estadium (
             id_stadium, name, capacity
         ) VALUES (
-            estadium_seq.NEXTVAL, :NEW.arena, :NEW.capacity
+            estadium_seq.NEXTVAL, :NEW.arena, :NEW.arenacapacity
         )
         RETURNING id_stadium INTO v_stadium_id;
     END;
@@ -23,7 +23,7 @@ BEGIN
         facebook = :NEW.facebook,
         instagram = :NEW.instagram,
         twitter = :NEW.twitter,
-        stadium_id_stadium = v_stadium_id
+        Estadium_id_stadium = v_stadium_id
     WHERE id_team = :NEW.team_id;
 
 EXCEPTION
