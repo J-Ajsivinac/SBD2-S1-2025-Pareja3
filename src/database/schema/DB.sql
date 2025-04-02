@@ -6,15 +6,31 @@ CREATE TABLE Advanced_team_stats
      pts_2nd_chance  INTEGER  NOT NULL , 
      pts_fb          INTEGER  NOT NULL , 
      largest_lead    INTEGER  NOT NULL , 
-     team_turnovers  INTEGER  NOT NULL , 
-     total_turnovers INTEGER  NOT NULL , 
-     team_rebounds   INTEGER  NOT NULL , 
+     team_turnovers  INTEGER , 
+     total_turnovers INTEGER , 
+     team_rebounds   INTEGER , 
      pts_off_to_home INTEGER , 
      pts_off_to_away INTEGER , 
      Games_id_game   INTEGER  NOT NULL , 
      Teams_id_team   INTEGER  NOT NULL 
     ) 
 ;
+
+CREATE TABLE Athletic 
+    ( 
+     id_athletic               INTEGER  NOT NULL , 
+     standing_vertical         NUMBER (6,2) , 
+     max_vertical              NUMBER (6,2) , 
+     lane_agility              NUMBER (6,2) , 
+     modified_agility          NUMBER (6,2) , 
+     three_quarter_sprint      NUMBER (6,2) , 
+     bench_press               NUMBER (8,2) , 
+     Player_Combine_id_combine INTEGER  NOT NULL 
+    ) 
+;
+
+ALTER TABLE Athletic 
+    ADD CONSTRAINT Athletic_PK PRIMARY KEY ( id_athletic ) ;
 
 CREATE TABLE Cities 
     ( 
@@ -94,7 +110,6 @@ CREATE TABLE Games
      natl_tv_broad_a  VARCHAR2 (4000) , 
      live_p_t_bcast   VARCHAR2 (4)  NOT NULL , 
      wh_status        INTEGER  NOT NULL , 
-     pts              INTEGER NOT NULL,
      Season_id_season INTEGER  NOT NULL 
     ) 
 ;
@@ -114,7 +129,7 @@ CREATE TABLE History
 
 CREATE TABLE Inactive_players 
     ( 
-     jersey_num        INTEGER  NOT NULL , 
+     jersey_num        INTEGER  , 
      Players_id_player INTEGER  NOT NULL , 
      Teams_id_team     INTEGER  NOT NULL 
     ) 
@@ -145,12 +160,41 @@ CREATE TABLE Overtime_score
 ALTER TABLE Overtime_score 
     ADD CONSTRAINT Overtime_score_PK PRIMARY KEY ( id_overtime ) ;
 
+CREATE TABLE pbp_players 
+    ( 
+     id_pbp_player                INTEGER , 
+     person_type                  INTEGER , 
+     Players_id_player            INTEGER  NOT NULL , 
+     Play_by_play_Play_by_play_ID NUMBER  NOT NULL ,
+     Teams_id_team                INTEGER
+    ) 
+;
+
+ALTER TABLE pbp_players 
+    ADD CONSTRAINT pbp_players_PK PRIMARY KEY ( Players_id_player ) ;
+
+CREATE TABLE Physical 
+    ( 
+     id_physical               INTEGER  NOT NULL , 
+     height_wo_shoes           NUMBER (6,2) , 
+     height_w_shoes            NUMBER (6,2) , 
+     weight                    NUMBER (6,2) , 
+     wingspan                  NUMBER (6,2) , 
+     standing_reach            NUMBER (6,2) , 
+     body_fat_pct              NUMBER (8,2) , 
+     hand_length               NUMBER (6,2) , 
+     hand_width                NUMBER (6,2) , 
+     Player_Combine_id_combine INTEGER  NOT NULL 
+    ) 
+;
+
+ALTER TABLE Physical 
+    ADD CONSTRAINT Physical_PK PRIMARY KEY ( id_physical ) ;
+
 CREATE TABLE Play_by_play 
     ( 
-     jersey_num           INTEGER , 
+    Play_by_play_ID      NUMBER  NOT NULL ,
      Games_id_game        INTEGER  NOT NULL , 
-     Teams_id_team        INTEGER  NOT NULL , 
-     Players_id_player    INTEGER  NOT NULL , 
      eventnum             INTEGER  NOT NULL , 
      eventmsgactiontype   INTEGER  NOT NULL , 
      eventmsgtype         INTEGER  NOT NULL , 
@@ -160,11 +204,26 @@ CREATE TABLE Play_by_play
      video_available_flag BLOB  NOT NULL , 
      period               INTEGER  NOT NULL , 
      score                VARCHAR2 (10) , 
-     homedescription      VARCHAR2 (40) , 
-     neutraldescription   VARCHAR2 (40) , 
-     visitordescription   VARCHAR2 (40) 
+     homedescription      VARCHAR2 (100) , 
+     neutraldescription   VARCHAR2 (100) , 
+     visitordescription   VARCHAR2 (100)  
     ) 
 ;
+
+ALTER TABLE Play_by_play 
+    ADD CONSTRAINT Play_by_play_PK PRIMARY KEY ( Play_by_play_ID ) ;
+
+CREATE TABLE Player_Combine 
+    ( 
+     id_combine        INTEGER  NOT NULL , 
+     position          VARCHAR2 (50) , 
+     season            INTEGER  NOT NULL , 
+     Players_id_player INTEGER 
+    ) 
+;
+
+ALTER TABLE Player_Combine 
+    ADD CONSTRAINT Player_Combine_PK PRIMARY KEY ( id_combine ) ;
 
 CREATE TABLE Players 
     ( 
@@ -182,7 +241,8 @@ CREATE TABLE Players
     greatest_75_flag     VARCHAR2(5), 
     Countries_id_country INTEGER, 
     Teams_id_team        INTEGER
-);
+)
+;
 
 ALTER TABLE Players 
     ADD CONSTRAINT Players_PK PRIMARY KEY ( id_player ) ;
@@ -211,6 +271,19 @@ CREATE TABLE Season
 
 ALTER TABLE Season 
     ADD CONSTRAINT Season_PK PRIMARY KEY ( id_season ) ;
+
+CREATE TABLE Shooting 
+    ( 
+     id_shooting               INTEGER  NOT NULL , 
+     shot_type                 VARCHAR2 (30) , 
+     position                  VARCHAR2 (30) , 
+     percentaje                VARCHAR2(20) , 
+     Player_Combine_id_combine INTEGER  NOT NULL 
+    ) 
+;
+
+ALTER TABLE Shooting 
+    ADD CONSTRAINT Shooting_PK PRIMARY KEY ( id_shooting ) ;
 
 CREATE TABLE State 
     ( 
@@ -266,6 +339,17 @@ ALTER TABLE Advanced_team_stats
     REFERENCES Teams 
     ( 
      id_team
+    ) 
+;
+
+ALTER TABLE Athletic 
+    ADD CONSTRAINT Athletic_Player_Combine_FK FOREIGN KEY 
+    ( 
+     Player_Combine_id_combine
+    ) 
+    REFERENCES Player_Combine 
+    ( 
+     id_combine
     ) 
 ;
 
@@ -401,6 +485,40 @@ ALTER TABLE Overtime_score
     ) 
 ;
 
+ALTER TABLE pbp_players 
+    ADD CONSTRAINT pbp_players_Play_by_play_FK FOREIGN KEY 
+    ( 
+     Play_by_play_Play_by_play_ID
+    ) 
+    REFERENCES Play_by_play 
+    ( 
+     Play_by_play_ID
+    ) 
+;
+
+ALTER TABLE pbp_players 
+    ADD CONSTRAINT pbp_players_Players_FK FOREIGN KEY 
+    ( 
+     Players_id_player
+    ) 
+    REFERENCES Players 
+    ( 
+     id_player
+    ) 
+;
+
+ALTER TABLE Physical 
+    ADD CONSTRAINT Physical_Player_Combine_FK FOREIGN KEY 
+    ( 
+     Player_Combine_id_combine
+    ) 
+    REFERENCES Player_Combine 
+    ( 
+     id_combine
+    ) 
+;
+
+
 ALTER TABLE Play_by_play 
     ADD CONSTRAINT Play_by_play_Games_FK FOREIGN KEY 
     ( 
@@ -413,17 +531,6 @@ ALTER TABLE Play_by_play
 ;
 
 ALTER TABLE Play_by_play 
-    ADD CONSTRAINT Play_by_play_Players_FK FOREIGN KEY 
-    ( 
-     Players_id_player
-    ) 
-    REFERENCES Players 
-    ( 
-     id_player
-    ) 
-;
-
-ALTER TABLE Play_by_play 
     ADD CONSTRAINT Play_by_play_Teams_FK FOREIGN KEY 
     ( 
      Teams_id_team
@@ -431,6 +538,17 @@ ALTER TABLE Play_by_play
     REFERENCES Teams 
     ( 
      id_team
+    ) 
+;
+
+ALTER TABLE Player_Combine 
+    ADD CONSTRAINT Player_Combine_Players_FK FOREIGN KEY 
+    ( 
+     Players_id_player
+    ) 
+    REFERENCES Players 
+    ( 
+     id_player
     ) 
 ;
 
@@ -466,6 +584,18 @@ ALTER TABLE Quarter_score
      id_game
     ) 
 ;
+
+ALTER TABLE Shooting 
+    ADD CONSTRAINT Shooting_Player_Combine_FK FOREIGN KEY 
+    ( 
+     Player_Combine_id_combine
+    ) 
+    REFERENCES Player_Combine 
+    ( 
+     id_combine
+    ) 
+;
+
 
 ALTER TABLE State 
     ADD CONSTRAINT State_Countries_FK FOREIGN KEY 
