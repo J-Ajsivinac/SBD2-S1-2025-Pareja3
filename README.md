@@ -24,10 +24,12 @@ Este documento detalla el proceso de extracción, transformación y carga (ETL) 
 Se diseñó un modelo relacional normalizado que asegura la integridad y consistencia de los datos.  
 
 ### 2.1 Diagrama Entidad-Relación  
-_Se adjunta el diagrama ER del modelo utilizado._  
+_Se adjunta el diagrama ER incial del modelo utilizado._  
 
 ![Diagrama ER](img/Logical.jpg)  
 
+_Se adjunta el diagrama ER final del modelo utilizado._
+![Diagrama ER](img/Logica_finall.jpg)  
 ### 2.2 Justificación del Modelo  
 - **Normalización**: Se aplicaron principios de normalización para evitar redundancias y mejorar la eficiencia de consultas.  
 - **Integridad referencial**: Se definieron claves foráneas para asegurar la coherencia entre las tablas.  
@@ -437,34 +439,42 @@ _Se adjunta el diagrama ER del modelo utilizado._
 
 
 
-1. **Nueva Entidad "Physical"**:
+5. **Nueva Entidad "Physical"**:
    - **Descripción**: Se introdujo la entidad "Physical" que contiene los atributos `height_w_shoes`, `weight`, `wingspan`, entre otros, relacionados con la física de los jugadores.
    - **Razón**: Paraa permitir un análisis más detallado de las características físicas de los jugadores.
 ![Diagrama ER](img/changes/c1.png)
 
 
-2. **Relación entre "Players" y "Physical"**:
+6. **Relación entre "Players" y "Physical"**:
    - **Descripción**: Se estableció una relación entre "Players" y "Physical". Esto indica que cada jugador tiene un conjunto de datos físicos asociados.
    - **Razón**: Relacionar las características físicas de los jugadores con la entidad "Players" permite un manejo más específico de estos datos en comparación con la estructura original.
 
 ![Diagrama ER](img/changes/c1.png)
 
-3. **Atributos Nuevos en "Players"**:
+7. **Atributos Nuevos en "Players"**:
    - **Descripción**: Se añadieron los atributos `height`, `weight`, `wingspan`, y otros en la entidad "Players".
    - **Razón**: Esta adición refuerza la relación entre los jugadores y sus características físicas.
 
-4. **Nueva Entidad "Player_Combine"**:
+![Diagrama ER](img/changes/c2.png)
+8. **Nueva Entidad "Player_Combine"**:
    - **Descripción**: Aparece una nueva entidad llamada "Player_Combine", con atributos como `id_combine`, `position`, `season`, y una relación con "Players".
    - **Razón**: Para almacenar información sobre las pruebas combinadas de los jugadores, que son típicamente parte de la evaluación de nuevos talentos en la NBA.
+![Diagrama ER](img/changes/c2.png)
 
-5. **Cambio en la Relación entre "Teams" y "Players"**:
+
+9. **Cambio en la Relación entre "Teams" y "Players"**:
    - **Descripción**: La relación entre "Teams" y "Players" ahora está más detallada, mostrando que los jugadores son asignados a un equipo, pero también con un tipo de relación más clara con roles específicos como "inactive_players".
    - **Razón**: Este cambio ayuda a manejar más efectivamente la dinámica de equipos y jugadores activos/inactivos dentro de la base de datos.
 
-6. **Atributos Nuevos en "Teams"**:
+![Diagrama ER](img/changes/c3.png)
+
+10. **Atributos Nuevos en "Teams"**:
    - **Descripción**: La entidad "Teams" ha sido ampliada con atributos como `owner`, `generalManager`, y las relaciones sociales (Facebook, Instagram, etc.), que no estaban presentes en la versión inicial.
    - **Razón**: Para almacenar información adicional sobre los equipos, como su dirección administrativa y presencia en redes sociales.
+![Diagrama ER](img/changes/c4.png)
 
-7. **Eliminación de algunas relaciones**:
-   - **Descripción**: Algunas relaciones entre entidades como "Games" y "Season" han sido modificadas o eliminadas, probablemente debido a ajustes en el enfoque del modelo de datos.
-   - **Razón**: refinamiento en cómo se gestionan los juegos y las temporadas, posiblemente para simplificar el modelo o adaptarse mejor a nuevas necesidades del proyecto.
+
+11. **Eliminación de algunas relaciones**:
+   - **Descripción**: Algunas relaciones entre entidades como "Games" y "Season" han sido modificadas
+   - **Razón**: refinamiento en cómo se gestionan los juegos y las temporadas
+![Diagrama ER](img/changes/c5.png)
