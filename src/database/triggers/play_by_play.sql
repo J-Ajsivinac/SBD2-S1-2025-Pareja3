@@ -39,9 +39,9 @@ BEGIN
     );
 
     -- Llamadas al procedimiento para insertar jugadores
-    Insert_Play_by_Play_Player(:NEW.player1_id, :NEW.player1_team_abbreviation, :NEW.person1type, v_play_id);
-    Insert_Play_by_Play_Player(:NEW.player2_id, :NEW.player2_team_abbreviation, :NEW.person2type, v_play_id);
-    Insert_Play_by_Play_Player(:NEW.player3_id, :NEW.player3_team_abbreviation, :NEW.person3type, v_play_id);
+    Insert_Play_by_Play_Player(:NEW.player1_id, :NEW.game_id, :NEW.person1type, v_play_id,1);
+    Insert_Play_by_Play_Player(:NEW.player2_id, :NEW.game_id, :NEW.person2type, v_play_id,2);
+    Insert_Play_by_Play_Player(:NEW.player3_id, :NEW.game_id, :NEW.person3type, v_play_id,3);
 
 EXCEPTION
     WHEN DUP_VAL_ON_INDEX THEN

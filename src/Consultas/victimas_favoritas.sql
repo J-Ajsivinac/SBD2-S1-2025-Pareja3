@@ -8,6 +8,8 @@ BEGIN
     from teams 
     where nickname = p_equipo_name;
     
+    DBMS_OUTPUT.PUT_LINE(RPAD('RIVAL', 20) || RPAD('PUNTOS', 20) || RPAD('VICTORIAS', 10));
+    DBMS_OUTPUT.PUT_LINE(RPAD('-', 50, '-'));
     -- Mostrar los resultados directamente (modo SQL*Plus o consola)
     FOR r IN (
         SELECT 
@@ -42,10 +44,8 @@ BEGIN
         GROUP BY rival_id
         ORDER BY puntos_totales DESC
     ) LOOP
-        DBMS_OUTPUT.PUT_LINE('Rival: ' || r.rival_id || 
-                             ' | Puntos: ' || r.puntos_totales || 
-                             ' | Victorias: ' || r.veces_ganadas);
-    END LOOP;
+        DBMS_OUTPUT.PUT_LINE(RPAD(r.rival_id, 20) || RPAD(r.puntos_totales, 20) || RPAD(r.veces_ganadas, 10));
+    END LOOP;   
 END;
 /
 

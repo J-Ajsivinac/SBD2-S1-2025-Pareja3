@@ -7,7 +7,7 @@ BEGIN
     UPDATE Games
     SET game_date = :NEW.game_date,
         attendance = :NEW.attendance,
-        game_time = TO_NUMBER(REGEXP_REPLACE(:NEW.game_time, '[^0-9]', ''))
+        game_time = :NEW.game_time
     WHERE id_game = TO_NUMBER(:NEW.game_id);
 EXCEPTION
     WHEN OTHERS THEN

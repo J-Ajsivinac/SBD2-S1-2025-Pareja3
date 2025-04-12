@@ -3,16 +3,32 @@ AFTER INSERT ON team_details_temp
 FOR EACH ROW
 DECLARE
     v_stadium_id INTEGER;
+    v_stadium_exists NUMBER;
 BEGIN
-    -- Insertar en la tabla de estadios
+    -- Primero verificar si el estadio ya existe
     BEGIN
-        INSERT INTO estadium (
-            id_stadium, name, capacity
-        ) VALUES (
-            estadium_seq.NEXTVAL, :NEW.arena, :NEW.arenacapacity
-        )
-        RETURNING id_stadium INTO v_stadium_id;
+        SELECT id_stadium INTO v_stadium_id
+        FROM estadium
+        WHERE name = :NEW.arena
+        AND ROWNUM = 1;
+        
+        v_stadium_exists := 1;
+    EXCEPTION
+        WHEN NO_DATA_FOUND THEN
+            v_stadium_exists := 0;
     END;
+    
+    -- Si el estadio no existe, crearlo
+    IF v_stadium_exists = 0 THEN
+        BEGIN
+            INSERT INTO estadium (
+                id_stadium, name, capacity
+            ) VALUES (
+                estadium_seq.NEXTVAL, :NEW.arena, :NEW.arenacapacity
+            )
+            RETURNING id_stadium INTO v_stadium_id;
+        END;
+    END IF;
 
     -- Actualizar el equipo con los nuevos detalles
     UPDATE Teams
@@ -32,8 +48,7 @@ EXCEPTION
 END;
 /
 
-
--- Trigger para cargar datos de team_history_temp a History
+-- Trigger para cargar datos de team_history_temp a History (sin cambios)
 CREATE OR REPLACE TRIGGER trg_team_history_temp_insert
 AFTER INSERT ON team_history_temp
 FOR EACH ROW

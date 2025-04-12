@@ -6,7 +6,7 @@ FROM (
     SELECT 
         teams_id_team1 AS equipo
     FROM games
-    inner join teams on teams.id_team = teams_id_team1
+    inner join teams on teams.id_team = teams_id_team
     WHERE score_team1 > score_team2
     AND teams.state_id_state != 24
 
@@ -16,7 +16,7 @@ FROM (
     SELECT 
         teams_id_team AS equipo
     FROM games
-    inner join teams on teams.id_team = teams_id_team
+    inner join teams on teams.id_team = teams_id_team1
     WHERE score_team2 > score_team1
     AND teams.state_id_state != 24
 )

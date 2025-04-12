@@ -78,7 +78,11 @@ END;
 ALTER TABLE Quarter_score ADD team_type VARCHAR2(10);
 ALTER TABLE Overtime_score ADD team_type VARCHAR2(10);
 
-ALTER TABLE Play_by_play DROP COLUMN id_play;
+ALTER TABLE pbp_players DROP COLUMN teams_id_team;
+
+ALTER TABLE Draft ADD player_profile_flag INTEGER NOT NULL;
+ALTER TABLE draft MODIFY season NULL;
+
 ALTER TABLE Play_by_play MODIFY homedescription VARCHAR2(100);
 ALTER TABLE Play_by_play MODIFY neutraldescription VARCHAR2(100);
 ALTER TABLE Play_by_play MODIFY visitordescription VARCHAR2(100);
@@ -88,3 +92,13 @@ ALTER TABLE Advanced_team_stats MODIFY team_rebounds NULL;
 
 ALTER TABLE Player_Combine MODIFY Players_id_player NULL;
 ALTER TABLE Shooting MODIFY percentaje VARCHAR2(20);
+
+
+ALTER TABLE pbp_players 
+DROP CONSTRAINT pbp_players_PK;
+
+ALTER TABLE pbp_players 
+ADD CONSTRAINT pbp_players_PK PRIMARY KEY (id_pbp_player);
+
+ALTER TABLE pbp_players ADD Players_id_player INTEGER NOT NULL;
+ALTER TABLE pbp_players ADD Players_id_player NOT NULL;

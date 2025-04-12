@@ -31,6 +31,10 @@ TRUNCATE TABLE Quarter_score;
 TRUNCATE TABLE Overtime_score;
 TRUNCATE TABLE TEAM_TEMP;
 
+TRUNCATE TABLE pbp_players;
+TRUNCATE TABLE Play_by_play;
+TRUNCATE TABLE play_by_play_temp;
+
 --  Script para borrar datos de todas las tablas temporales si existen
 BEGIN
     FOR t IN (SELECT table_name FROM user_tables WHERE table_name LIKE '%_TEMP')
