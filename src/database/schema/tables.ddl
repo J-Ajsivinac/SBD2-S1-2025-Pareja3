@@ -177,7 +177,7 @@ CREATE TABLE Play_by_play
 CREATE TABLE Players 
     ( 
      id_player            INTEGER  NOT NULL , 
-     full_name            VARCHAR2 (1) , 
+     full_name            VARCHAR2 (100) , 
      first_name           VARCHAR2 (4000) , 
      las_name             VARCHAR2 (4000) , 
      is_active            CHAR (1) , 
