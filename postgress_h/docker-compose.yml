@@ -1,0 +1,78 @@
+services:
+  postgresql-master:
+    image: bitnami/postgresql-repmgr:15
+    container_name: master
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=postgres
+      - POSTGRESQL_USERNAME=replica
+      - POSTGRESQL_PASSWORD=replica_pass
+      - POSTGRESQL_DATABASE=app_db
+      - REPMGR_PASSWORD=replica_pass
+      - REPMGR_PRIMARY_HOST=postgresql-master
+      - REPMGR_PARTNER_NODES=postgresql-master,postgresql-slave
+      - REPMGR_NODE_NAME=master-1                 # Cambiado a master-1
+      - REPMGR_NODE_NETWORK_NAME=postgresql-master
+      - REPMGR_NODE_ID=1
+      - REPMGR_PORT_NUMBER=5432
+      - REPMGR_USERNAME=replica
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql_master_data:/bitnami/postgresql
+    networks:
+      - postgres_net
+
+  postgresql-slave:
+    image: bitnami/postgresql-repmgr:15
+    container_name: slave
+    depends_on:
+      - postgresql-master
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=postgres
+      - POSTGRESQL_USERNAME=replica
+      - POSTGRESQL_PASSWORD=replica_pass
+      - POSTGRESQL_DATABASE=app_db
+      - REPMGR_PASSWORD=replica_pass
+      - REPMGR_PRIMARY_HOST=postgresql-master
+      - REPMGR_PARTNER_NODES=postgresql-master,postgresql-slave
+      - REPMGR_NODE_NAME=slave-2                  # Cambiado a slave-2
+      - REPMGR_NODE_NETWORK_NAME=postgresql-slave
+      - REPMGR_NODE_ID=2
+      - REPMGR_PORT_NUMBER=5432
+      - REPMGR_USERNAME=replica
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgresql_slave_data:/bitnami/postgresql
+    networks:
+      - postgres_net
+
+  pgpool:
+    image: bitnami/pgpool:latest
+    container_name: pgpool
+    environment:
+      - PGPOOL_SR_CHECK_USER=replica
+      - PGPOOL_SR_CHECK_PASSWORD=replica_pass
+      - PGPOOL_POSTGRES_USERNAME=postgres
+      - PGPOOL_POSTGRES_PASSWORD=postgres
+      - PGPOOL_ADMIN_USERNAME=admin
+      - PGPOOL_ADMIN_PASSWORD=adminpass
+      - PGPOOL_BACKEND_NODES=0:postgresql-master:5432,1:postgresql-slave:5432
+      - PGPOOL_ENABLE_LOAD_BALANCING=yes
+    ports:
+      - "5431:5432"
+    depends_on:
+      - postgresql-master
+      - postgresql-slave
+    networks:
+      - postgres_net
+
+volumes:
+  postgresql_master_data:
+    driver: local
+  postgresql_slave_data:
+    driver: local
+
+networks:
+  postgres_net:
+    driver: bridge

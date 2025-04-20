@@ -28,7 +28,7 @@ services:
       - "1522:1521"
       - "5501:5500"
     environment:
-      - ORACLE_SID=STBY
+      - ORACLE_SID=ORCLCDB
       - ORACLE_PDB=STBYPDB1
       - ORACLE_PWD=Hola1234!
     volumes:

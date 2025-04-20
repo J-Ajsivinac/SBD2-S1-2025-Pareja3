@@ -3,7 +3,7 @@ ORCLCDB =
     (ADDRESS = (PROTOCOL = TCP)(HOST = oracle_master)(PORT = 1521))
     (CONNECT_DATA =
       (SERVER = DEDICATED)
-      (SERVICE_NAME = ORCLPDB1)
+      (SERVICE_NAME = ORCLCDB_DGMGRL)
     )
   )
 
@@ -12,6 +12,6 @@ STBY =
     (ADDRESS = (PROTOCOL = TCP)(HOST = oracle_standby)(PORT = 1521))
     (CONNECT_DATA =
       (SERVER = DEDICATED)
-      (SERVICE_NAME = STBYPDB1)
+      (SERVICE_NAME = STBY_DGMGRL)
     )
   )
