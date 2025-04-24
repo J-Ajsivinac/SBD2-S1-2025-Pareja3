@@ -1,0 +1,1 @@
+{"start_time":"2025-04-24T04:27:42.456849Z","finish_time":"2025-04-24T04:27:42.734049Z","date_fmt":"%Y-%m-%dT%H:%M:%S.%fZ","hostname":"c01e7b660b1a","data_dir":"/bitnami/postgresql/data","pg_version":150010,"start_lsn":1879048232,"finish_lsn":1879048448,"is_permanent":false,"system_identifier":7496708559573991548,"uncompressed_size":38872082,"compressed_size":7263345}

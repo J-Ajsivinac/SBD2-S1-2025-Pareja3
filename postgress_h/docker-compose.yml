@@ -1,6 +1,10 @@
+version: '3.8'
+
 services:
   postgresql-master:
-    image: bitnami/postgresql-repmgr:15
+    build:
+      context: .
+      dockerfile: Dockerfile.master-walg
     container_name: master
     environment:
       - POSTGRESQL_POSTGRES_PASSWORD=postgres
@@ -10,15 +14,23 @@ services:
       - REPMGR_PASSWORD=replica_pass
       - REPMGR_PRIMARY_HOST=postgresql-master
       - REPMGR_PARTNER_NODES=postgresql-master,postgresql-slave
-      - REPMGR_NODE_NAME=master-1                 # Cambiado a master-1
+      - REPMGR_NODE_NAME=master-1
       - REPMGR_NODE_NETWORK_NAME=postgresql-master
       - REPMGR_NODE_ID=1
       - REPMGR_PORT_NUMBER=5432
       - REPMGR_USERNAME=replica
+      - WALG_FILE_PREFIX=file:///bitnami/postgresql/wal_backups
+      - PGUSER=postgres
+      - PGPASSWORD=postgres
     ports:
       - "5432:5432"
     volumes:
       - postgresql_master_data:/bitnami/postgresql
+      - ./configs/master/postgresql.conf:/bitnami/postgresql/conf/postgresql.conf
+      - ./configs/master/repmgr.conf:/bitnami/repmgr/conf/repmgr.conf
+      - ./configs/common/pg_hba.conf:/bitnami/postgresql/conf/pg_hba.conf
+      - ./wal_backups:/bitnami/postgresql/wal_backups
+      - ./walg_config:/root/.walg
     networks:
       - postgres_net
 
@@ -35,7 +47,7 @@ services:
       - REPMGR_PASSWORD=replica_pass
       - REPMGR_PRIMARY_HOST=postgresql-master
       - REPMGR_PARTNER_NODES=postgresql-master,postgresql-slave
-      - REPMGR_NODE_NAME=slave-2                  # Cambiado a slave-2
+      - REPMGR_NODE_NAME=slave-2
       - REPMGR_NODE_NETWORK_NAME=postgresql-slave
       - REPMGR_NODE_ID=2
       - REPMGR_PORT_NUMBER=5432
