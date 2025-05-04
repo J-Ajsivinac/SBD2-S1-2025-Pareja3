@@ -13,7 +13,6 @@ def init_db_connections():
 def before_first_request():
     init_db_connections()
 
-
 # Endpoint para cargar los datos de los equipos ganadores de SQLite a MongoDB
 @app.route('/team_wins', methods=['POST'])
 def load_team_wins():
@@ -34,7 +33,18 @@ def load_team_wins():
                 'team_id': row[0],
                 'team_name': row[1],
                 'nickname': row[2],
-                'wins': row[3],
+                'abbreviation': row[3],
+                'year_founded': row[4],
+                'arena': row[5],
+                'arena_capacity': row[6],
+                'head_coach': row[7],
+                'owner': row[8],
+                'general_manager': row[9],
+                'dleague': row[10],
+                'facebook': row[11],
+                'instagram': row[12],
+                'twitter': row[13],
+                'wins': row[14],
             })
 
         insert_data_to_mongo(app.config['MONGO_COLLECTION_WINS'], data_to_insert)
@@ -54,9 +64,20 @@ def team_wins():
         for item in data:
             results.append({
                 'team_id': item['team_id'],
-                'wins': item['wins'],
-                'nickname': item['nickname'],
                 'team_name': item['team_name'],
+                'nickname': item['nickname'],
+                'abbreviation': item['abbreviation'],
+                'year_founded': item['year_founded'],
+                'arena': item['arena'],
+                'arena_capacity': item['arena_capacity'],
+                'head_coach': item['head_coach'],
+                'owner': item['owner'],
+                'general_manager': item['general_manager'],
+                'dleague': item['dleague'],
+                'facebook': item['facebook'],
+                'instagram': item['instagram'],
+                'twitter': item['twitter'],
+                'wins': item['wins'],
             })
 
     except Exception as e:
@@ -88,6 +109,17 @@ def load_team_losses():
                 'team_id': row[0],
                 'team_name': row[1],
                 'nickname': row[2],
+                'abbreviation': row[3],
+                'year_founded': row[4],
+                'arena': row[5],
+                'arena_capacity': row[6],
+                'head_coach': row[7],
+                'owner': row[8],
+                'general_manager': row[9],
+                'dleague': row[10],
+                'facebook': row[11],
+                'instagram': row[12],
+                'twitter': row[13],
                 'losses': row[3],
             })
 
@@ -108,9 +140,20 @@ def team_losses():
         for item in data:
             results.append({
                 'team_id': item['team_id'],
-                'losses': item['losses'],
-                'nickname': item['nickname'],
                 'team_name': item['team_name'],
+                'nickname': item['nickname'],
+                'abbreviation': item['abbreviation'],
+                'year_founded': item['year_founded'],
+                'arena': item['arena'],
+                'arena_capacity': item['arena_capacity'],
+                'head_coach': item['head_coach'],
+                'owner': item['owner'],
+                'general_manager': item['general_manager'],
+                'dleague': item['dleague'],
+                'facebook': item['facebook'],
+                'instagram': item['instagram'],
+                'twitter': item['twitter'],
+                'losses': item['losses'],
             })
 
     except Exception as e:
@@ -141,8 +184,24 @@ def load_player_scores():
             data_to_insert.append({
                 'player_id': row[0],
                 'player_name': row[1],
-                'games_with_points': row[2],
-                'total_points': row[3],
+                'birth_date': row[2],
+                'country': row[3],
+                'school': row[4],
+                'height': row[5],
+                'weight': row[6],
+                'position': row[7],
+                'jersey_number': row[8],    
+                'player_slug': row[9],
+                'season_experience': row[10],
+                'draft_year': row[11],
+                'draft_number': row[12],
+                'team_name': row[13],
+                'nickname': row[14],
+                'abbreviation': row[15],
+                'state': row[16],
+                'city': row[17],
+                'games_with_points': row[18],
+                'total_points': row[19],
             })
 
         insert_data_to_mongo(app.config['MONGO_COLLECTION_PLAYER_SCORES'], data_to_insert)
@@ -163,6 +222,22 @@ def player_scores():
             results.append({
                 'player_id': item['player_id'],
                 'player_name': item['player_name'],
+                'birth_date': item['birth_date'],
+                'country': item['country'],
+                'school': item['school'],
+                'height': item['height'],
+                'weight': item['weight'],
+                'position': item['position'],
+                'jersey_number': item['jersey_number'],
+                'player_slug': item['player_slug'],
+                'season_experience': item['season_experience'],
+                'draft_year': item['draft_year'],
+                'draft_number': item['draft_number'],
+                'team_name': item['team_name'],
+                'nickname': item['nickname'],
+                'abbreviation': item['abbreviation'],
+                'state': item['state'],
+                'city': item['city'],
                 'games_with_points': item['games_with_points'],
                 'total_points': item['total_points'],
             })
@@ -174,7 +249,6 @@ def player_scores():
         return jsonify({'error': 'No data found'}), 404
 
     return jsonify(results), 200
-
 
 # Endpoint para cargar los datos de las víctimas desde SQLite a MongoDB
 @app.route('/victims', methods=['POST'])
