@@ -44,11 +44,307 @@ https://127.0.0.1:5000
 - **SQLite**: `ruta`
 - **MongoDB**: Servidor local en `mongodb://localhost:27017/`
   - Base de datos: `nba_database`
-  - Colecciones: `team_wins`, `team_losses`, `player_scores`, `victims`
+  - Colecciones: `team_wins`, `team_losses`, `player_scores`, `victims`, `games_details`
 
-## 4. Endpoints de la API
+## 4. Código Principal
 
-### 4.1. Estadísticas de Victorias de Equipos
+### 4.1. Estadísticas Completas de Equipos
+
+#### `/team_stats` [POST]
+Procesa y transfiere estadísticas completas de equipos desde SQLite a MongoDB, incluyendo información general, detalles administrativos, redes sociales y análisis de equipos "víctimas".
+
+**Descripción:**
+Este endpoint extrae información completa de equipos de la NBA, combinando datos básicos con estadísticas de victorias y derrotas, información administrativa y datos de redes sociales. Además, incluye un análisis de los equipos "víctimas" (equipos contra los que han obtenido más victorias).
+
+**Proceso:**
+1. Obtiene datos combinados de equipos mediante la función `get_team_stats`
+2. Calcula estadísticas adicionales como el porcentaje de victorias
+3. Formatea los datos de equipos "víctimas" en una estructura adecuada
+4. Estructura toda la información en formato JSON jerárquico
+5. Almacena los datos en la colección `teams` de MongoDB
+
+**Estructura de datos procesados:**
+```json
+{
+  "team_id": "BOS",
+  "team_name": "Boston Celtics",
+  "nickname": "Celtics",
+  "abbreviation": "BOS",
+  "stats": {
+    "wins": 56,
+    "losses": 26,
+    "total_games": 82,
+    "win_percentage": 68.29
+  },
+  "details": {
+    "year_founded": 1946,
+    "arena": "TD Garden",
+    "arena_capacity": 18624,
+    "head_coach": "Joe Mazzulla",
+    "owner": "Boston Basketball Partners L.L.C. (Wyc Grousbeck)",
+    "general_manager": "Brad Stevens",
+    "dleague_affiliation": "Maine Celtics"
+  },
+  "social_media": {
+    "facebook": "bostonceltics",
+    "instagram": "celtics",
+    "twitter": "celtics"
+  },
+  "victims": [
+    {
+      "equipo_victima": "Charlotte Hornets",
+      "victorias": 12
+    },
+    {
+      "equipo_victima": "Toronto Raptors",
+      "victorias": 10
+    }
+  ]
+}
+```
+
+**Respuesta exitosa:**
+```json
+{
+  "message": "Datos de equipos cargados exitosamente en la colección teams",
+  "count": 30
+}
+```
+
+**Respuesta de error:**
+```json
+{
+  "error": "No se encontraron datos de equipos"
+}
+```
+
+**Ejemplo de uso:**
+```bash
+curl -X POST https://127.0.0.1:5000/team_stats
+```
+
+![alt text](image/docu_3.png)
+![alt text](image/docu_4.png)
+
+### 4.1 Función `get_games_data`
+
+Esta función obtiene datos completos de juegos de la NBA de forma optimizada desde la base de datos SQLite.
+
+```python
+def get_games_data(cursor):
+    """Consulta para obtener los datos completos de juegos de forma optimizada."""
+    # Consulta principal para datos de juegos
+    main_query = """
+    SELECT
+    g.game_id, g.game_date, g.season_id, g.season_type,
+    g.team_id_home, g.team_abbreviation_home, g.team_name_home,
+    g.matchup_home, g.wl_home, g.pts_home, g.plus_minus_home,
+    g.fgm_home, g.fga_home, g.fg_pct_home, g.fg3m_home, g.fg3a_home, g.fg3_pct_home,
+    g.ftm_home, g.fta_home, g.ft_pct_home, g.oreb_home, g.dreb_home, g.reb_home,
+    g.ast_home, g.stl_home, g.blk_home, g.tov_home, g.pf_home,
+    g.team_id_away, g.team_abbreviation_away, g.team_name_away,
+    g.matchup_away, g.wl_away, g.pts_away, g.plus_minus_away,
+    g.fgm_away, g.fga_away, g.fg_pct_away, g.fg3m_away, g.fg3a_away, g.fg3_pct_away,
+    g.ftm_away, g.fta_away, g.ft_pct_away, g.oreb_away, g.dreb_away, g.reb_away,
+    g.ast_away, g.stl_away, g.blk_away, g.tov_away, g.pf_away,
+    CASE WHEN g.wl_home = 'W' THEN g.team_name_home ELSE g.team_name_away END as winner
+    FROM game g
+    """
+
+    cursor.execute(main_query)
+    columns = [col[0] for col in cursor.description]
+    games = []
+    game_ids = []
+
+    # Crear diccionario de juegos primero
+    games_dict = {}
+    for row in cursor.fetchall():
+        game_data = dict(zip(columns, row))
+        game_id = game_data['game_id']
+        games_dict[game_id] = game_data
+        game_ids.append(game_id)
+
+    # Función auxiliar para obtener datos relacionados en lotes pequeños
+    def get_related_data(table_name):
+        if not game_ids:
+            return {}
+            
+        result = {}
+        columns = None
+        # Procesar en lotes de 500 para evitar "too many SQL variables"
+        batch_size = 500
+        
+        for i in range(0, len(game_ids), batch_size):
+            batch = game_ids[i:i+batch_size]
+            placeholders = ','.join(['?'] * len(batch))
+            query = f"SELECT * FROM {table_name} WHERE game_id IN ({placeholders})"
+            cursor.execute(query, batch)
+            
+            if not cursor.description:
+                continue
+                
+            if columns is None:
+                columns = [col[0] for col in cursor.description]
+            
+            for row in cursor.fetchall():
+                data = dict(zip(columns, row))
+                result[data['game_id']] = data
+            
+        return result
+
+    # Obtener datos relacionados en lote
+    related_tables = ['line_score', 'game_summary', 'game_info', 'other_stats']
+    related_data = {table: get_related_data(table) for table in related_tables}
+
+    # Completar y estructurar los datos de juegos con la información relacionada
+    for game_id, game_data in games_dict.items():
+        # Extraer el año de la temporada desde game_summary si está disponible
+        season_year = None
+        if game_id in related_data['game_summary'] and 'season' in related_data['game_summary'][game_id]:
+            season_year = related_data['game_summary'][game_id]['season']
+        
+        structured_game = {
+            'id': game_id,
+            'date': game_data['game_date'],
+            'season': {
+                'id': game_data['season_id'],
+                'type': game_data['season_type'],
+                'year': season_year
+            },
+            'teams': {
+                'home': {
+                    'id': game_data['team_id_home'],
+                    'abbreviation': game_data['team_abbreviation_home'],
+                    'name': game_data['team_name_home'],
+                    'matchup': game_data['matchup_home'],
+                    'result': game_data['wl_home'],
+                    'stats': {
+                        'points': game_data['pts_home'],
+                        'plus_minus': game_data['plus_minus_home'],
+                        'shooting': {
+                            'field_goals': {
+                                'made': game_data['fgm_home'],
+                                'attempted': game_data['fga_home'],
+                                'percentage': game_data['fg_pct_home']
+                            },
+                            'three_points': {
+                                'made': game_data['fg3m_home'],
+                                'attempted': game_data['fg3a_home'],
+                                'percentage': game_data['fg3_pct_home']
+                            },
+                            'free_throws': {
+                                'made': game_data['ftm_home'],
+                                'attempted': game_data['fta_home'],
+                                'percentage': game_data['ft_pct_home']
+                            }
+                        },
+                        'rebounds': {
+                            'offensive': game_data['oreb_home'],
+                            'defensive': game_data['dreb_home'],
+                            'total': game_data['reb_home']
+                        },
+                        'assists': game_data['ast_home'],
+                        'steals': game_data['stl_home'],
+                        'blocks': game_data['blk_home'],
+                        'turnovers': game_data['tov_home'],
+                        'fouls': game_data['pf_home']
+                    }
+                },
+                'away': {
+                    'id': game_data['team_id_away'],
+                    'abbreviation': game_data['team_abbreviation_away'],
+                    'name': game_data['team_name_away'],
+                    'matchup': game_data['matchup_away'],
+                    'result': game_data['wl_away'],
+                    'stats': {
+                        'points': game_data['pts_away'],
+                        'plus_minus': game_data['plus_minus_away'],
+                        'shooting': {
+                            'field_goals': {
+                                'made': game_data['fgm_away'],
+                                'attempted': game_data['fga_away'],
+                                'percentage': game_data['fg_pct_away']
+                            },
+                            'three_points': {
+                                'made': game_data['fg3m_away'],
+                                'attempted': game_data['fg3a_away'],
+                                'percentage': game_data['fg3_pct_away']
+                            },
+                            'free_throws': {
+                                'made': game_data['ftm_away'],
+                                'attempted': game_data['fta_away'],
+                                'percentage': game_data['ft_pct_away']
+                            }
+                        },
+                        'rebounds': {
+                            'offensive': game_data['oreb_away'],
+                            'defensive': game_data['dreb_away'],
+                            'total': game_data['reb_away']
+                        },
+                        'assists': game_data['ast_away'],
+                        'steals': game_data['stl_away'],
+                        'blocks': game_data['blk_away'],
+                        'turnovers': game_data['tov_away'],
+                        'fouls': game_data['pf_away']
+                    }
+                }
+            },
+            'winner': game_data['winner'],
+            'details': {}
+        }
+        
+        # Agregar los datos relacionados a la estructura
+        for table in related_tables:
+            if game_id in related_data[table]:
+                table_data = related_data[table][game_id]
+                # Eliminar el game_id para evitar redundancia
+                if 'game_id' in table_data:
+                    del table_data['game_id']
+                structured_game['details'][table] = table_data
+        
+        games.append(structured_game)
+
+    return games
+```
+![alt text](image/docu_2.png)
+![alt text](image/docu_1.png)
+
+### 4.2 Endpoint para cargar datos de juegos
+
+```python
+@app.route('/api/load_games', methods=['POST'])
+def load_full_games():
+    try:
+        # Obtener los datos de juegos usando la función del db_manager
+        results = get_games_data(app.config['SQLITE_CURSOR'])
+
+        if not results:
+            return jsonify({'error': 'No games data found'}), 404
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    try:
+        # Insertar los resultados en MongoDB
+        games_collection = app.config['MONGO_DB']['games_details']
+        
+        # Opcional: limpiar datos existentes si se solicita
+        force = request.args.get('force', '').lower() == 'true'
+        if force:
+            games_collection.delete_many({})
+            
+        # Insertar datos usando tu función existente
+        insert_data_to_mongo(games_collection, results)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+    return jsonify({'message': 'Game data loaded successfully', 'count': len(results)}), 200
+```
+
+## 5. Endpoints de la API
+
+### 5.1. Estadísticas de Victorias de Equipos
 
 ![alt text](image/img1.jpg)
 
@@ -116,7 +412,7 @@ ORDER BY wins DESC;
 curl -X POST https://127.0.0.1:5000/team_wins
 ```
 
-### 4.2. Estadísticas de Derrotas de Equipos
+### 5.2. Estadísticas de Derrotas de Equipos
 
 ![alt text](image/img10.jpg)
 
@@ -184,7 +480,7 @@ ORDER BY losses DESC;
 curl -X POST https://127.0.0.1:5000/team_losses
 ```
 
-### 4.3. Estadísticas de Jugadores
+### 5.3. Estadísticas de Jugadores
 ![alt text](image/img6.jpg)
 #### `/player_scores` [GET]
 Obtiene las estadísticas de puntuación de todos los jugadores desde MongoDB.
@@ -225,9 +521,40 @@ La consulta analiza los registros de play-by-play para extraer la información d
 }
 ```
 
+### 5.4. Datos de Juegos Completos
+
+#### `/api/load_games` [POST]
+Procesa y transfiere datos detallados de juegos desde SQLite a MongoDB.
+
+**Descripción:**
+Este endpoint extrae información completa de juegos de la NBA, incluyendo estadísticas de equipos locales y visitantes, resultados de partidos, y datos relacionados como line_score, game_summary, game_info y other_stats.
+
+**Proceso:**
+1. Consulta principal a la tabla `game` para obtener datos básicos
+2. Procesamiento en lotes de 500 juegos para evitar la limitación "too many SQL variables"
+3. Recopilación de datos relacionados desde tablas auxiliares
+4. Estructuración de datos en formato JSON jerárquico
+5. Almacenamiento en la colección `games_details` de MongoDB
+
+**Parámetros:**
+- `force` (opcional): Si se establece como "true", elimina registros existentes antes de insertar
+
+**Respuesta exitosa:**
+```json
+{
+  "message": "Game data loaded successfully",
+  "count": 1230
+}
+```
+
 **Ejemplo de uso:**
 ```bash
-curl -X POST https://127.0.0.1:5000/player_scores
+curl -X POST https://127.0.0.1:5000/api/load_games?force=true
+```
+
+**Ejemplo de uso sin forzar la eliminación de datos existentes:**
+```bash
+curl -X POST https://127.0.0.1:5000/api/load_games
 ```
 
 ### 4.4. Análisis de Equipos "Víctimas"
@@ -288,6 +615,8 @@ ORDER BY victorias DESC;
   "message": "Data loaded into victims collection successfully"
 }
 ```
+
+
 
 **Ejemplo de uso:**
 ```bash
