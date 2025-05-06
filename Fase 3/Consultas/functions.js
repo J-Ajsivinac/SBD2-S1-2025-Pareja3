@@ -22,6 +22,7 @@ function buscarInfo(tipo, nombre) {
             print(`- País: ${jugador.personal_info.country || "N/A"}`);
             print(`- Estatura: ${jugador.personal_info.height || "N/A"}`);
             print(`- Peso: ${jugador.personal_info.weight || "N/A"}`);
+            print(`- school: ${jugador.personal_info.school || "N/A"}`);
             print("\n🎮 **Carrera:**");
             print(`- Posición: ${jugador.career.position || "N/A"}`);
             print(
@@ -31,6 +32,13 @@ function buscarInfo(tipo, nombre) {
                 `- Experiencia de temporada: ${
                     jugador.career.season_experience || "N/A"
                 }`
+            );
+            print("\n🎮 **Equipo:**");
+            print(
+                `- Nombre del equipo: ${jugador.team.name || "N/A"}`
+            );
+            print(
+                `- Nombre del equipo: ${jugador.team.abbreviation || "N/A"}`
             );
             print("\n-----------------------------");
         } else {
