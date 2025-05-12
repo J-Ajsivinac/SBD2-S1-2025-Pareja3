@@ -54,7 +54,7 @@
 > [!NOTE]  
 > **Proyecto Fase 3**
 >
-> <div align="center" style="display:flex;justify-content:center;gap:20px"><img src="https://go-skill-icons.vercel.app/api/icons?i=docker,dbeaver,mongo,python,flask,sqlite,js" /></div>
+> <div align="center" style="display:flex;justify-content:center;gap:20px"><img src="https://go-skill-icons.vercel.app/api/icons?i=mongo,docker,dbeaver,python,flask,sqlite,js" /></div>
 > 
 > * Docker
 > * Dbeaver
