@@ -411,6 +411,36 @@ def load_full_games():
 
     return jsonify({'message': 'Game data loaded successfully', 'count': len(results)}), 200
 
+
+@app.route('/api/chicago_bulls', methods=['GET'])
+def get_chicago_bulls_players():
+    try:
+        # Obtener la colección
+        collection = app.config['MONGO_COLLECTION_PLAYER_SCORES']
+        results = collection.find({"team.name": "Chicago Bulls"})
+
+        players = []
+        for player in results:
+            players.append({
+                'player_id': player.get('player_id'),
+                'player_name': player.get('player_name'),
+                'team_name': player.get('team', {}).get('name'),
+                'position': player.get('career', {}).get('position'),
+                'height': player.get('personal_info', {}).get('height'),
+                'weight': player.get('personal_info', {}).get('weight'),
+                'birth_date': player.get('personal_info', {}).get('birth_date'),
+                'country': player.get('personal_info', {}).get('country'),
+            })
+
+        if not players:
+            return jsonify({'error': 'No data found'}), 404
+
+        return jsonify(players), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
 @app.teardown_appcontext
 def close_connections(exception):
     if 'SQLITE_CONN' in app.config:

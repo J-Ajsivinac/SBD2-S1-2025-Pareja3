@@ -67,3 +67,54 @@ top10EquiposPerdedores.forEach((equipo) => {
 });
 
 print("\n-----------------------------");
+
+
+// Chicago Bulls
+
+const nombreEquipo = "Chicago Bulls";
+
+
+const buscarTodosLosJugadoresEnEquipo = db.player_stats.find(
+    {
+        $or: [
+            { team: { $regex: `^${nombreEquipo}$`, $options: "i" } },
+            { nickname: { $regex: `^${nombreEquipo}$`, $options: "i" } },
+            {
+                abbreviation: {
+                    $regex: `^${nombreEquipo}$`,
+                    $options: "i",
+                },
+            },
+        ],
+    },
+    
+); 
+
+// mostrar la información de todos los jugadores en el equipo
+if (buscarTodosLosJugadoresEnEquipo.hasNext()) {
+    print("🏀 **Jugadores en el Equipo**");
+    print("-------------------------------------------------");
+    buscarTodosLosJugadoresEnEquipo.forEach((jugador) => {
+        print(`🎽 **Nombre del Jugador:** ${jugador.player_name}`);
+        print(`🏀 **Posición:** ${jugador.position}`);
+        print(`📅 **Fecha de Nacimiento:** ${jugador.date_of_birth}`);
+        print(`🏆 **Estadísticas:**`);
+        print(`- Puntos Totales: ${jugador.statistics.total_points}`);
+        print(`- Asistencias Totales: ${jugador.statistics.total_assists}`);
+        print(`- Rebotes Totales: ${jugador.statistics.total_rebounds}`);
+        print("\n-----------------------------");
+    });
+}
+else {
+    print(`❌ No se encontró información sobre los jugadores en el equipo: ${nombreEquipo}`);
+}
+
+
+db.collecction.find({"team.name": "Chicago Bulls"}).forEach(function(doc) {
+    print("Nombre del Jugador: " + doc.player_name);
+    print("Estadísticas: " + doc.statistics);
+    print("Información Personal: " + doc.personal_info);
+    print("Carrera: " + doc.career);
+    print("Equipo: " + doc.team);
+    print("-----------------------------");
+});
