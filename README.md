@@ -32,7 +32,6 @@
 
 ---
 
-<br>
 
 > [!NOTE]  
 > **Proyecto Fase 2**
@@ -51,7 +50,6 @@
 
 ---
 
-<br>
 
 > [!NOTE]  
 > **Proyecto Fase 3**
