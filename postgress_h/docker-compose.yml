@@ -97,6 +97,24 @@ services:
       - postgress_h_postgresql_slave_data:/bitnami/postgresql
     networks:
       - postgres_net
+  restore-db:
+    image: custom-postgresql-repmgr:15
+    container_name: restore-db
+    environment:
+      - POSTGRESQL_POSTGRES_PASSWORD=postgres
+      - POSTGRESQL_USERNAME=replica
+      - POSTGRESQL_PASSWORD=replica_pass
+      - POSTGRESQL_DATABASE=app_db
+      - BITNAMI_DEBUG=true
+    volumes:
+      - ./pgbackrest_repo:/var/lib/pgbackrest
+      - ./configs/restore/pgbackrest.conf:/etc/pgbackrest/pgbackrest.conf
+      - ./configs/master/postgresql.conf:/custom-configs/postgresql.conf
+      - ./configs/master/repmgr.conf:/custom-configs/repmgr.conf
+      - ./configs/common/pg_hba.conf:/custom-configs/pg_hba.conf
+      - ./scripts/init:/docker-entrypoint-initdb.d
+      - restore-data:/bitnami/postgresql
+    command: sleep infinity  # Evita inicialización automática
 
 volumes:
   postgresql_master_data:
@@ -105,6 +123,7 @@ volumes:
     driver: local
   pgbackrest_repo:
     driver: local
+  restore-data:
 
 networks:
   postgres_net:
